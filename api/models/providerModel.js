@@ -1,10 +1,10 @@
 'use strict';
 
-var mongoose = require('mongoose');
-var mongoosePaginate = require('mongoose-paginate');
-var Schema = mongoose.Schema;
+let mongoose = require('mongoose'),
+    mongoosePaginate = require('mongoose-paginate'),
+    Schema = mongoose.Schema;
 
-var ProviderSchema = new Schema({
+let ProviderSchema = new Schema({
     name: {
         type: String,
         required: true,

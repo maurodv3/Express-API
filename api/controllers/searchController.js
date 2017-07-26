@@ -2,8 +2,8 @@
 
 exports.search = function(req, res, Entity) {
 
-    var query = {};
-    var searchTerm = req.params.term;
+    let query = {},
+        searchTerm = req.params.term;
 
     if (searchTerm) {
         //This type of search only look for full words.

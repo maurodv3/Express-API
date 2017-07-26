@@ -4,37 +4,51 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('bbb:server');
-var http = require('http');
+const app = require('../app'),
+      debug = require('debug')('bbb:server'),
+      http = require('http');
+
+/**
+ * HTTPS dependencies.
+ */
+const fs = require('fs'),
+      https = require('https'),
+      privateKey = fs.readFileSync('ssl/server.key', 'utf8'),
+      certificate = fs.readFileSync('ssl/server.crt', 'utf8'),
+      credentials = { key: privateKey, cert: certificate };
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3001');
-app.set('port', port);
+let httpPort = normalizePort(process.env.PORT || '3001'),
+    httpsPort = normalizePort('3002');
 
 /**
- * Create HTTP server.
+ * Create HTTP/S server.
  */
 
-var server = http.createServer(app);
+let httpServer = http.createServer(app),
+    httpsServer = https.createServer(credentials, app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+httpServer.listen(httpPort);
+httpServer.on('error', onError);
+httpServer.on('listening', onListeningHttp);
+
+httpsServer.listen(httpsPort);
+httpsServer.on('error', onError);
+httpsServer.on('listening', onListeningHttps);
 
 /**
  * Normalize a port into a number, string, or false.
  */
 
 function normalizePort(val) {
-    var port = parseInt(val, 10);
+    let port = parseInt(val, 10);
 
     if (isNaN(port)) {
         // named pipe
@@ -58,7 +72,7 @@ function onError(error) {
         throw error;
     }
 
-    var bind = typeof port === 'string'
+    let bind = typeof port === 'string'
         ? 'Pipe ' + port
         : 'Port ' + port;
 
@@ -78,12 +92,20 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener for HTTP/S server "listening" event.
  */
 
-function onListening() {
-    var addr = server.address();
-    var bind = typeof addr === 'string'
+function onListeningHttp() {
+    let addr = httpServer.address();
+    let bind = typeof addr === 'string'
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+}
+
+function onListeningHttps() {
+    let addr = httpsServer.address();
+    let bind = typeof addr === 'string'
         ? 'pipe ' + addr
         : 'port ' + addr.port;
     debug('Listening on ' + bind);

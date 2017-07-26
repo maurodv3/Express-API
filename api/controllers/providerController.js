@@ -1,6 +1,6 @@
 'use strict';
 
-var mongoose = require('mongoose'),
+let mongoose = require('mongoose'),
     Provider = mongoose.model('Provider');
 
 exports.list_all = function(req, res) {
@@ -17,7 +17,7 @@ exports.list_all = function(req, res) {
 };
 
 exports.create = function(req, res) {
-    var new_provider = new Provider(req.body);
+    let new_provider = new Provider(req.body);
     new_provider.save(function(err, provider) {
         if (err) {
             res.send(err);
@@ -55,7 +55,7 @@ exports.delete = function(req, res) {
 
 exports.search = function(req, res) {
 
-    var searchController = require("./searchController");
+    let searchController = require("./searchController");
 
     searchController.search(req, res, Provider);
 

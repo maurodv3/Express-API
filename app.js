@@ -1,46 +1,35 @@
-var express = require('express');
-var path = require('path');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var cors = require('cors');
+let express = require('express'),
+    path = require('path'),
+    logger = require('morgan'),
+    bodyParser = require('body-parser'),
+    cors = require('cors'),
+    mongoose = require('mongoose'),
+    authProxy = require('./aaa/authProxy'),
+    errorHandler = require('./error/errorHandler');
 
 // models
-var Provider = require('./api/models/providerModel');
+let Provider = require('./api/models/providerModel');
 
 // database
-var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://192.168.99.100:32770/bbb', { useMongoClient: true });
-
-// routes
-var providerRoutes = require('./api/routes/providerRoute');
+mongoose.connect('mongodb://192.168.99.100:32768/bbb', { useMongoClient: true });
 
 // init app
-var app = express();
+let app = express();
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
+// authorization service
+authProxy.registerServer();
+app.use(authProxy.authRequest);
+
 // init routes
+let providerRoutes = require('./api/routes/providerRoute');
 app.use('/v1', providerRoutes);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.send({url: req.originalUrl + ' not found'})
-});
+// error handling
+app.use(errorHandler.handleErrors);
 
 module.exports = app;

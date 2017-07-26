@@ -1,8 +1,8 @@
 'use strict';
 
-var express = require('express');
-var router = express.Router();
-var providerController = require('../controllers/providerController');
+let express = require('express'),
+    router = express.Router(),
+    providerController = require('../controllers/providerController');
 
 router.get('/providers', providerController.list_all);
 router.post('/providers', providerController.create);
