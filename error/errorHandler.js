@@ -1,34 +1,21 @@
 'use strict';
 
-function handleErrors(err, req, res) {
+exports.handleErrors = function(err, req, res, next) {
 
     // catch unauthorized
     if (err.name === 'UnauthorizedError') {
-        res.status(401).send('invalid token...');
+        res.status(401).json({ message: 'Provided invalid token.' });
+        return;
     }
 
     //catch permission denied
     if (err.code === 'permission_denied') {
-        res.status(401).send('insufficient permissions');
+        res.status(401).json({ message: 'Insufficient permissions.' });
+        return;
     }
 
     //else
-    let error;
+    res.status(err.status || 500);
+    res.json({ message: req.originalUrl + ' not found' });
 
-    if (err) {
-        error = err;
-    } else {
-        error = new Error('Not Found');
-        error.status = 404;
-    }
-
-    res.locals.message = error.message;
-    res.locals.error = req.app.get('env') === 'development' ? error : {};
-    res.status(error.status || 500);
-    res.send({url: req.originalUrl + 'not found'})
-
-}
-
-module.exports = {
-    handleErrors: handleErrors
 };

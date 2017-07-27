@@ -3,7 +3,7 @@
 let https = require("https");
 let serverToken = '';
 
-function authRequest(req, res, next) {
+exports.authRequest = function(req, res, next) {
 
     let clientToken = '';
 
@@ -34,7 +34,7 @@ function authRequest(req, res, next) {
                 console.log();
                 next();
             } else {
-                res.status(this.statusCode).send(this.statusMessage);
+                res.status(this.statusCode).json({ message: 'Provided invalid token.' });
             }
         })
     });
@@ -55,9 +55,9 @@ function authRequest(req, res, next) {
     });
 
     request.end();
-}
+};
 
-function registerServer() {
+exports.registerServer = function() {
 
     let credentials = {
         username: "admin",
@@ -108,9 +108,4 @@ function registerServer() {
 
     request.write(JSON.stringify(credentials));
     request.end();
-}
-
-module.exports = {
-    authRequest: authRequest,
-    registerServer: registerServer
 };
