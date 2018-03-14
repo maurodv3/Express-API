@@ -2,8 +2,8 @@
 
 Created with express-generator.
 
-Using:
-  Morgan (logging)
-  Mongoose (data storage)
+Using: <br>
+  Morgan (logging) <br>
+  Mongoose (data storage)<br>
   
   
